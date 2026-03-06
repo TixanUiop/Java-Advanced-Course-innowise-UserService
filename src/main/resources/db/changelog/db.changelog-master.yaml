@@ -5,3 +5,6 @@ databaseChangeLog:
 
   - include:
       file: db/changelog/sql/002-create-payment-cards.sql
+
+  - include:
+      file: db/changelog/sql/003-auto-increment.sql
