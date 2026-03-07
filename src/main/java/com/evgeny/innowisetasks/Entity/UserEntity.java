@@ -3,9 +3,7 @@ package com.evgeny.innowisetasks.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import javax.smartcardio.Card;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -35,7 +33,7 @@ public class UserEntity extends BaseEntity {
     private Boolean active = true;
 
     @OneToMany(
-            mappedBy = "users",
+            mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
