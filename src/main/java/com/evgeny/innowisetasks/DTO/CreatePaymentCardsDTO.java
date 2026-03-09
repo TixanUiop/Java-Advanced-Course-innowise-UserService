@@ -17,11 +17,9 @@ public class CreatePaymentCardsDTO {
 
     private String number;
 
-    private String holder;
-
     private LocalDate expirationDate;
 
     private Boolean active;
 
-    private UserEntity user;
+    private Long userId;
 }

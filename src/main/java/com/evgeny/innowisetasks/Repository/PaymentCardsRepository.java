@@ -20,4 +20,9 @@ public interface PaymentCardsRepository extends JpaRepository<PaymentCardsEntity
     @Modifying
     @Query("UPDATE UserEntity u SET u.active = :active WHERE u.id = :id")
     Boolean updateActiveStatusJPQL(@Param("id") Long id, @Param("active") boolean active);
+
+    //JPQL
+    @Modifying
+    @Query("UPDATE PaymentCardsEntity p SET p.active = :active WHERE p.id = :id")
+    int updateActiveStatusPayJPQL(@Param("id") Long id, @Param("active") boolean active);
 }
