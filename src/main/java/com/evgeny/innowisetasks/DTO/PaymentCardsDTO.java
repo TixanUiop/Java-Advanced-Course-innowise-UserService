@@ -24,5 +24,4 @@ public class PaymentCardsDTO {
 
     private Boolean active;
 
-    private UserEntity user;
 }
