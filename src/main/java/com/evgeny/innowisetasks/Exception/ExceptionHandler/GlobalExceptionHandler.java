@@ -1,15 +1,41 @@
 package com.evgeny.innowisetasks.Exception.ExceptionHandler;
 
 import com.evgeny.innowisetasks.Exception.*;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, Object> errors = Map.of(
+                "error", "Validation failed",
+                "details", ex.getBindingResult().getFieldErrors().stream()
+                        .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+                        .collect(Collectors.toList())
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String, Object>> handleConstraintViolation(ConstraintViolationException ex) {
+        Map<String, Object> errors = Map.of(
+                "error", "Validation failed",
+                "details", ex.getConstraintViolations().stream()
+                        .map(cv -> cv.getPropertyPath() + ": " + cv.getMessage())
+                        .collect(Collectors.toList())
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleUserNotFound(UserNotFoundException ex) {
