@@ -10,6 +10,8 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,43 +32,44 @@ public class PaymentCardsController {
     }
 
     @GetMapping
-    public Page<PaymentCardsDTO> getAllPaymentCards(
-            Pageable pageable
-    ) {
-        return paymentCardService.getAll(pageable);
+    public ResponseEntity<Page<PaymentCardsDTO>> getAllPaymentCards(Pageable pageable) {
+        Page<PaymentCardsDTO> cards = paymentCardService.getAll(pageable);
+        return ResponseEntity.ok(cards);
     }
 
     @GetMapping("/{id}")
-    public PaymentCardsDTO getPaymentCardsById(@Positive @PathVariable Long id)
-    {
-        return paymentCardService.getById(id);
+    public ResponseEntity<PaymentCardsDTO> getPaymentCardsById(@Positive @PathVariable Long id) {
+        PaymentCardsDTO dto = paymentCardService.getById(id);
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/create")
-    public PaymentCardsDTO create(@Valid @RequestBody CreatePaymentCardsDTO dto) {
-        return paymentCardService.create(dto);
+    public ResponseEntity<PaymentCardsDTO> create(@Valid @RequestBody CreatePaymentCardsDTO dto) {
+        PaymentCardsDTO created = paymentCardService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/update")
-    public PaymentCardsDTO update(
-            @Valid @RequestBody PaymentCardsDTO dto) {
-
-        return paymentCardService.update(dto);
+    public ResponseEntity<PaymentCardsDTO> update(@Valid @RequestBody PaymentCardsDTO dto) {
+        PaymentCardsDTO updated = paymentCardService.update(dto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/delete/{id}")
-    public PaymentCardsDTO delete(@Positive @PathVariable Long id) {
-        return paymentCardService.delete(id);
+    public ResponseEntity<Void> delete(@Positive @PathVariable Long id) {
+        paymentCardService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/activate/{id}")
-    public Boolean activate(@Positive @PathVariable Long id) {
-        return paymentCardService.activate(id);
+    public ResponseEntity<Void> activate(@Positive @PathVariable Long id) {
+        paymentCardService.activate(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/deactivate/{id}")
-    public Boolean deactivate(@Positive @PathVariable Long id) {
-        return paymentCardService.deactivate(id);
+    public ResponseEntity<Void> deactivate(@Positive @PathVariable Long id) {
+        paymentCardService.deactivate(id);
+        return ResponseEntity.noContent().build();
     }
-
 }

@@ -10,6 +10,8 @@ import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,52 +31,57 @@ public class UserController {
     }
 
 
-    @GetMapping
-    public Page<UserDTO> getAllUsers(
-            @RequestParam(required = false, defaultValue = "") String name,
-            @RequestParam(required = false, defaultValue = "") String surname,
-            Pageable pageable) {
-        return userService.getAll(name, surname, pageable);
-    }
-
-    //Fix problem more then have
     @GetMapping("/{id}")
-    public Optional<UserDTO> getUserById(@Positive @PathVariable Long id)
-    {
-        return Optional.of(userService.getById(id));
+    public ResponseEntity<UserDTO> getUserById(@Positive @PathVariable Long id) {
+        UserDTO user = userService.getById(id);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/create")
-    public Optional<UserDTO> create(@Valid @RequestBody CreateUserDTO dto) {
-       return Optional.of(userService.create(dto));
+    public ResponseEntity<UserDTO> create(@Valid @RequestBody CreateUserDTO dto) {
+        UserDTO created = userService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/update/{id}")
-    public UserDTO update(
+    public ResponseEntity<UserDTO> update(
             @Positive @PathVariable Long id,
             @Valid @RequestBody UserDTO dto) {
-
-        return userService.update(id, dto);
+        UserDTO updated = userService.update(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/delete/{id}")
-    public UserDTO delete(@Positive @PathVariable Long id) {
-        return userService.delete(id);
+    public ResponseEntity<Void> delete(@Positive @PathVariable Long id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/activate/{id}")
-    public Boolean activate(@Positive @PathVariable Long id) {
-        return userService.activate(id);
+    public ResponseEntity<Void> activate(@Positive @PathVariable Long id) {
+        userService.activate(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/deactivate/{id}")
-    public Boolean deactivate(@Positive @PathVariable Long id) {
-        return userService.deactivate(id);
+    public ResponseEntity<Void> deactivate(@Positive @PathVariable Long id) {
+        userService.deactivate(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/get-cards-users-by-id/{id}")
-    public List<PaymentCardsDTO> getCardsById(@Positive @PathVariable Long id) {
-        return userService.getCardsByUserId(id);
+    public ResponseEntity<List<PaymentCardsDTO>> getCardsById(@Positive @PathVariable Long id) {
+        List<PaymentCardsDTO> cards = userService.getCardsByUserId(id);
+        return ResponseEntity.ok(cards);
     }
 
+    @GetMapping
+    public ResponseEntity<Page<UserDTO>> getAllUsers(
+            @RequestParam(required = false, defaultValue = "") String name,
+            @RequestParam(required = false, defaultValue = "") String surname,
+            Pageable pageable) {
+
+        Page<UserDTO> users = userService.getAll(name, surname, pageable);
+        return ResponseEntity.ok(users); // 200 OK
+    }
 }

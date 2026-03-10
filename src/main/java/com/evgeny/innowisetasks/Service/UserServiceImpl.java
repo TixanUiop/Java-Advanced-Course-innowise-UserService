@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
         this.userMapper = userMapper;
     }
 
-
     @Override
     public UserDTO delete(Long id) {
         UserEntity user = userRepository.findById(id)
