@@ -6,9 +6,11 @@ import com.evgeny.innowisetasks.DTO.UserDTO;
 import com.evgeny.innowisetasks.Service.PaymentCardService;
 import com.evgeny.innowisetasks.Service.PaymentCardServiceImpl;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +18,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/payment-cards")
+@Validated
 public class PaymentCardsController {
 
     public PaymentCardService paymentCardService;
@@ -34,14 +37,14 @@ public class PaymentCardsController {
     }
 
     @GetMapping("/{id}")
-    public Optional<PaymentCardsDTO> getPaymentCardsById(@PathVariable Long id)
+    public PaymentCardsDTO getPaymentCardsById(@Positive @PathVariable Long id)
     {
-        return Optional.of(paymentCardService.getById(id));
+        return paymentCardService.getById(id);
     }
 
     @PostMapping("/create")
-    public Optional<PaymentCardsDTO> create(@Valid @RequestBody CreatePaymentCardsDTO dto) {
-        return Optional.of(paymentCardService.create(dto));
+    public PaymentCardsDTO create(@Valid @RequestBody CreatePaymentCardsDTO dto) {
+        return paymentCardService.create(dto);
     }
 
     @PutMapping("/update")
@@ -52,17 +55,17 @@ public class PaymentCardsController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public PaymentCardsDTO delete(@PathVariable Long id) {
+    public PaymentCardsDTO delete(@Positive @PathVariable Long id) {
         return paymentCardService.delete(id);
     }
 
     @PostMapping("/activate/{id}")
-    public Boolean activate(@PathVariable Long id) {
+    public Boolean activate(@Positive @PathVariable Long id) {
         return paymentCardService.activate(id);
     }
 
     @PostMapping("/deactivate/{id}")
-    public Boolean deactivate(@PathVariable Long id) {
+    public Boolean deactivate(@Positive @PathVariable Long id) {
         return paymentCardService.deactivate(id);
     }
 
