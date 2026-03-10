@@ -6,6 +6,10 @@ import com.evgeny.innowisetasks.DTO.PaymentCardsDTO;
 import com.evgeny.innowisetasks.DTO.UserDTO;
 import com.evgeny.innowisetasks.Entity.PaymentCardsEntity;
 import com.evgeny.innowisetasks.Entity.UserEntity;
+import com.evgeny.innowisetasks.Exception.CardLimitExceededException;
+import com.evgeny.innowisetasks.Exception.CardNotFoundException;
+import com.evgeny.innowisetasks.Exception.CardStatusChangeException;
+import com.evgeny.innowisetasks.Exception.UserNotFoundException;
 import com.evgeny.innowisetasks.Mapper.PaymentCardsMapper;
 import com.evgeny.innowisetasks.Repository.PaymentCardsRepository;
 import com.evgeny.innowisetasks.Repository.UserRepository;
@@ -41,11 +45,11 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     public PaymentCardsDTO create(CreatePaymentCardsDTO dto) {
 
         UserEntity user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(dto.getUserId()));
 
 
         if (user.getCards().size() >= 5) {
-            throw new RuntimeException("User cannot have more than 5 cards");
+            throw new CardLimitExceededException(dto.getUserId());
         }
         //TODO: Add check number
         PaymentCardsEntity card = mapper.createToEntity(dto);
@@ -60,7 +64,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     @Override
     public PaymentCardsDTO getById(Long id) {
         PaymentCardsEntity card = cardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() -> new CardNotFoundException(id));
         return mapper.toDTO(card);
     }
 
@@ -83,7 +87,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     @Transactional
     public PaymentCardsDTO update(PaymentCardsDTO dto) {
         PaymentCardsEntity card = cardRepository.findById(dto.getId())
-                .orElseThrow(() -> new RuntimeException("Card not found"));
+                .orElseThrow(() -> new CardNotFoundException(dto.getId()));
 
         card.setNumber(dto.getNumber());
         card.setExpirationDate(dto.getExpirationDate());
@@ -98,7 +102,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
         int updated = cardRepository.updateActiveStatusPayJPQL(id, true);
 
         if (updated == 0) {
-            throw new RuntimeException("Status change error");
+            throw new CardStatusChangeException(id);
         }
         return true;
     }
@@ -109,14 +113,14 @@ public class PaymentCardServiceImpl implements PaymentCardService {
         int updated = cardRepository.updateActiveStatusPayJPQL(id, false);
 
         if (updated == 0) {
-            throw new RuntimeException("Status change error");
+            throw new CardStatusChangeException(id);
         }
         return true;
     }
     @Override
     public PaymentCardsDTO delete(Long id) {
         PaymentCardsEntity card = cardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Card is not found"));
+                .orElseThrow(() -> new CardNotFoundException(id));
 
         cardRepository.delete(card);
         return mapper.toDTO(card);

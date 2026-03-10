@@ -5,6 +5,9 @@ import com.evgeny.innowisetasks.DTO.CreateUserDTO;
 import com.evgeny.innowisetasks.DTO.PaymentCardsDTO;
 import com.evgeny.innowisetasks.DTO.UserDTO;
 import com.evgeny.innowisetasks.Entity.UserEntity;
+import com.evgeny.innowisetasks.Exception.StatusChangeErrorException;
+import com.evgeny.innowisetasks.Exception.UserAlreadyExistsException;
+import com.evgeny.innowisetasks.Exception.UserNotFoundException;
 import com.evgeny.innowisetasks.Mapper.UserMapper;
 import com.evgeny.innowisetasks.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +34,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO delete(Long id) {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+                .orElseThrow(() -> new UserNotFoundException(id));
         userRepository.delete(user);
         return userMapper.toDTO(user);
     }
@@ -40,6 +42,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDTO create(CreateUserDTO dto) {
+
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new UserAlreadyExistsException(dto.getEmail());
+        }
         UserEntity user = userMapper.toEntity(dto);
         return userMapper.toDTO(userRepository.save(user));
     }
@@ -47,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO getById(Long id) {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(id));
         return userMapper.toDTO(user);
     }
 
@@ -61,7 +67,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDTO update(Long id, UserDTO dto) {
         UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(id));
 
         user.setName(dto.getName());
         user.setSurname(dto.getSurname());
@@ -77,7 +83,7 @@ public class UserServiceImpl implements UserService {
         int updated = userRepository.updateActiveStatusJPQL(id, true);
 
         if (updated == 0) {
-            throw new RuntimeException("Status change error");
+            throw new StatusChangeErrorException();
         }
         return true;
     }
@@ -88,7 +94,7 @@ public class UserServiceImpl implements UserService {
         int updated = userRepository.updateActiveStatusJPQL(id, false);
 
         if (updated == 0) {
-            throw new RuntimeException("Status change error");
+            throw new StatusChangeErrorException();
         }
         return true;
     }
@@ -96,7 +102,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<PaymentCardsDTO> getCardsByUserId(Long userId) {
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         return user.getCards().stream()
                 .map(card -> new PaymentCardsDTO(card.getId(), card.getNumber(), card.getHolder(), card.getExpirationDate(), card.getActive()))

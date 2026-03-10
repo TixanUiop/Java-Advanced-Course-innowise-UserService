@@ -17,6 +17,9 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<UserEntity, Long>,
         JpaSpecificationExecutor<UserEntity> {
 
+
+    boolean existsByEmail(String email);
+
     //JPQL
     @Modifying
     @Query("UPDATE UserEntity u SET u.active = :active WHERE u.id = :id")
