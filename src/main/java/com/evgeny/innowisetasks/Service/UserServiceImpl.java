@@ -11,6 +11,9 @@ import com.evgeny.innowisetasks.Exception.UserNotFoundException;
 import com.evgeny.innowisetasks.Mapper.UserMapper;
 import com.evgeny.innowisetasks.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,6 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CachePut(value = "users", key = "#result.id")
     public UserDTO create(CreateUserDTO dto) {
 
         if (userRepository.existsByEmail(dto.getEmail())) {
@@ -50,6 +54,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDTO(userRepository.save(user));
     }
 
+    @Cacheable(value = "users", key = "#id")
     @Override
     public UserDTO getById(Long id) {
         UserEntity user = userRepository.findById(id)
@@ -65,6 +70,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", key = "#id")
     public UserDTO update(Long id, UserDTO dto) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
@@ -79,6 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", key = "#id")
     public Boolean activate(Long id) {
         int updated = userRepository.updateActiveStatusJPQL(id, true);
 
@@ -90,6 +97,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "users", key = "#id")
     public Boolean deactivate(Long id) {
         int updated = userRepository.updateActiveStatusJPQL(id, false);
 
@@ -99,6 +107,7 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    @Cacheable(value = "user_cards", key = "#userId")
     @Override
     public List<PaymentCardsDTO> getCardsByUserId(Long userId) {
         UserEntity user = userRepository.findById(userId)

@@ -15,6 +15,8 @@ import com.evgeny.innowisetasks.Repository.PaymentCardsRepository;
 import com.evgeny.innowisetasks.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +44,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "user_cards", key = "#dto.userId")
     public PaymentCardsDTO create(CreatePaymentCardsDTO dto) {
 
         UserEntity user = userRepository.findById(dto.getUserId())
@@ -62,6 +65,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     }
 
     @Override
+    @Cacheable(value = "cards", key = "#id")
     public PaymentCardsDTO getById(Long id) {
         PaymentCardsEntity card = cardRepository.findById(id)
                 .orElseThrow(() -> new CardNotFoundException(id));
@@ -77,6 +81,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     }
 
     @Override
+    @Cacheable(value = "user_cards", key = "#userId")
     public List<PaymentCardsDTO> getAllByUserId(Long userId) {
         return cardRepository.findAllByUserId(userId).stream()
                 .map(mapper::toDTO)
@@ -85,6 +90,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
 
     @Override
     @Transactional
+    @CacheEvict(value = {"cards", "user_cards"}, allEntries = false, key = "#dto.id")
     public PaymentCardsDTO update(PaymentCardsDTO dto) {
         PaymentCardsEntity card = cardRepository.findById(dto.getId())
                 .orElseThrow(() -> new CardNotFoundException(dto.getId()));
@@ -98,6 +104,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "user_cards", key = "#id")
     public Boolean activate(Long id) {
         int updated = cardRepository.updateActiveStatusPayJPQL(id, true);
 
@@ -109,6 +116,7 @@ public class PaymentCardServiceImpl implements PaymentCardService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "user_cards", key = "#id")
     public Boolean deactivate(Long id) {
         int updated = cardRepository.updateActiveStatusPayJPQL(id, false);
 
@@ -117,7 +125,9 @@ public class PaymentCardServiceImpl implements PaymentCardService {
         }
         return true;
     }
+
     @Override
+    @CacheEvict(value = {"cards", "user_cards"}, key = "#id")
     public PaymentCardsDTO delete(Long id) {
         PaymentCardsEntity card = cardRepository.findById(id)
                 .orElseThrow(() -> new CardNotFoundException(id));
