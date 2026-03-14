@@ -82,6 +82,6 @@ public class UserController {
             Pageable pageable) {
 
         Page<UserDTO> users = userService.getAll(name, surname, pageable);
-        return ResponseEntity.ok(users); // 200 OK
+        return ResponseEntity.ok(users);
     }
 }

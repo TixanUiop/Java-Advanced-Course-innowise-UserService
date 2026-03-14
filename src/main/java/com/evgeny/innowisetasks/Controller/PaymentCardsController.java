@@ -1,8 +1,9 @@
+
+
 package com.evgeny.innowisetasks.Controller;
 
 import com.evgeny.innowisetasks.DTO.CreatePaymentCardsDTO;
 import com.evgeny.innowisetasks.DTO.PaymentCardsDTO;
-import com.evgeny.innowisetasks.DTO.UserDTO;
 import com.evgeny.innowisetasks.Service.PaymentCardService;
 import com.evgeny.innowisetasks.Service.PaymentCardServiceImpl;
 import jakarta.validation.Valid;
@@ -15,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/payment-cards")

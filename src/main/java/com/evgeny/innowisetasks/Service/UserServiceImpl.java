@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
         user.setSurname(dto.getSurname());
         user.setEmail(dto.getEmail());
         user.setActive(dto.getActive());
-
+        user = userRepository.save(user);
         return userMapper.toDTO(user);
     }
 

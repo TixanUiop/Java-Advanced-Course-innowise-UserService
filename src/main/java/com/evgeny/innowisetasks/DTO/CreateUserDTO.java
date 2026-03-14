@@ -35,4 +35,5 @@ public class CreateUserDTO {
 
     @NotNull
     private Boolean active = true;
+
 }
