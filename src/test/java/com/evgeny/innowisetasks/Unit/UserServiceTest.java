@@ -130,12 +130,15 @@ public class UserServiceTest {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userMapper.toDTO(user)).thenReturn(userDTO);
+        when(userRepository.save(user)).thenReturn(user);
 
-        UserDTO result = userService.update(1L, userDTO);
+        UserDTO result = userService.update(userDTO);
 
         assertEquals("test", result.getName());
 
         verify(userRepository).findById(1L);
+        verify(userRepository).save(user);
+        verify(userMapper).toDTO(user);
     }
 
     @Test

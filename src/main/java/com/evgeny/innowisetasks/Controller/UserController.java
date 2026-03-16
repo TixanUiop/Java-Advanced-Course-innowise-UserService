@@ -47,7 +47,7 @@ public class UserController {
     public ResponseEntity<UserDTO> update(
             @Positive @PathVariable Long id,
             @Valid @RequestBody UserDTO dto) {
-        UserDTO updated = userService.update(id, dto);
+        UserDTO updated = userService.update(dto);
         return ResponseEntity.ok(updated);
     }
 

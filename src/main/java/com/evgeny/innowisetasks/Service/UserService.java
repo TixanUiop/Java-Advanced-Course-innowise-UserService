@@ -18,7 +18,7 @@ public interface UserService {
 
     Page<UserDTO> getAll(String name, String surname, Pageable pageable);
 
-    UserDTO update(Long id, UserDTO dto);
+    UserDTO update(UserDTO dto);
 
     Boolean activate(Long id);
 

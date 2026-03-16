@@ -4,27 +4,32 @@ import com.evgeny.innowisetasks.DTO.CreateUserDTO;
 import com.evgeny.innowisetasks.DTO.UserDTO;
 import com.evgeny.innowisetasks.Entity.UserEntity;
 import com.evgeny.innowisetasks.Repository.UserRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @ActiveProfiles("test")
+
 public class UserControllerIT {
 
     @Container
@@ -59,7 +64,7 @@ public class UserControllerIT {
         user.setEmail("john@test.com");
         user.setBirthDate(LocalDate.of(1990, 1, 1));
         user.setActive(true);
-
+        user.setCards(new ArrayList<>());
         user = userRepository.save(user);
     }
 
@@ -98,16 +103,19 @@ public class UserControllerIT {
     @Test
     void testUpdateUser() {
         UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
         dto.setName("JohnUpdated");
         dto.setSurname("DoeUpdated");
         dto.setEmail("johnupdated@test.com");
         dto.setBirthDate(LocalDate.of(1990,1,1));
         dto.setActive(true);
+        Optional<UserEntity> byId = userRepository.findById(dto.getId());
+        Assertions.assertThat(byId.isPresent()).isTrue();
 
         HttpEntity<UserDTO> request = new HttpEntity<>(dto);
 
         ResponseEntity<UserDTO> response =
-                restTemplate.exchange("/api/v1/users/update/" + user.getId(),
+                restTemplate.exchange("/api/v1/users/update/" + dto.getId(),
                         HttpMethod.PUT, request, UserDTO.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

@@ -19,6 +19,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -149,19 +150,14 @@ public class PaymentCardsControllerTest {
 
     @Test
     void testDeleteCard() {
-
         PaymentCardsEntity cardEntity = createCardInDb();
-
         restTemplate.delete("/api/v1/payment-cards/delete/" + cardEntity.getId());
-
+        Optional<PaymentCardsEntity> deleted = cardsRepository.findById(cardEntity.getId());
+        assertThat(deleted).isNotPresent();
         ResponseEntity<String> response =
-                restTemplate.getForEntity("/api/v1/payment-cards/" + cardEntity.getId(), String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        restTemplate.getForEntity("/api/v1/payment-cards/" + cardEntity.getId(), String.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
-
-
-
 
 
     private PaymentCardsEntity createCardInDb() {

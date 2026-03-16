@@ -70,10 +70,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "users", key = "#id")
-    public UserDTO update(Long id, UserDTO dto) {
-        UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+    @CacheEvict(value = "users", key = "#dto")
+    public UserDTO update(UserDTO dto) {
+
+        UserEntity user = userRepository.findById(dto.getId())
+                .orElseThrow(() -> new UserNotFoundException(dto.getId()));
 
         user.setName(dto.getName());
         user.setSurname(dto.getSurname());
