@@ -21,6 +21,13 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>,
 
     boolean existsByEmail(String email);
 
+
+    @EntityGraph(attributePaths = {"cards"})
+    Optional<UserEntity> findById(Long id);
+
+    @EntityGraph(attributePaths = {"cards"})
+    Page<UserEntity> findAll(Pageable pageable);
+
     //JPQL
     @Modifying
     @Query("UPDATE UserEntity u SET u.active = :active WHERE u.id = :id")
