@@ -3,7 +3,6 @@ package com.evgeny.innowisetasks.Service;
 
 import com.evgeny.innowisetasks.DTO.CreatePaymentCardsDTO;
 import com.evgeny.innowisetasks.DTO.PaymentCardsDTO;
-import com.evgeny.innowisetasks.DTO.UserDTO;
 import com.evgeny.innowisetasks.Entity.PaymentCardsEntity;
 import com.evgeny.innowisetasks.Entity.UserEntity;
 import com.evgeny.innowisetasks.Exception.CardLimitExceededException;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Pageable;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PaymentCardServiceImpl implements PaymentCardService {

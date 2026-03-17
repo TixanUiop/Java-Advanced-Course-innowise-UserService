@@ -34,11 +34,20 @@ public class UserServiceImpl implements UserService {
         this.userMapper = userMapper;
     }
 
+    @CacheEvict(value = "users", key = "#id")
     @Override
     public UserDTO delete(Long id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
-        userRepository.delete(user);
+
+        user.setActive(false);
+
+        if (user.getCards() != null) {
+            user.getCards().forEach(card -> card.setActive(false));
+        }
+
+        userRepository.save(user);
+
         return userMapper.toDTO(user);
     }
 
