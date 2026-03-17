@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PaymentCardServiceImpl implements PaymentCardService {
@@ -47,19 +48,20 @@ public class PaymentCardServiceImpl implements PaymentCardService {
     @CacheEvict(value = "user_cards", key = "#dto.userId")
     public PaymentCardsDTO create(CreatePaymentCardsDTO dto) {
 
-        UserEntity user = userRepository.findById(dto.getUserId())
+        UserEntity user = userRepository.findByIdForUpdate(dto.getUserId())
                 .orElseThrow(() -> new UserNotFoundException(dto.getUserId()));
 
+        long count = cardRepository.countByUserId(dto.getUserId());
 
-        if (user.getCards().size() >= 5) {
+        if (count >= 5) {
             throw new CardLimitExceededException(dto.getUserId());
         }
-        //TODO: Add check number
+
         PaymentCardsEntity card = mapper.createToEntity(dto);
         card.setHolder(user.getName() + " " + user.getSurname());
-
         card.setUser(user);
-        user.getCards().add(card);
+
+        cardRepository.save(card);
 
         return mapper.toDTO(card);
     }

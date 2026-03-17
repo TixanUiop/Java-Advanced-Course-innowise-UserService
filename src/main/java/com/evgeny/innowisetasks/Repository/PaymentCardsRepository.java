@@ -1,13 +1,17 @@
 package com.evgeny.innowisetasks.Repository;
 
 import com.evgeny.innowisetasks.Entity.PaymentCardsEntity;
+import com.evgeny.innowisetasks.Entity.UserEntity;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PaymentCardsRepository extends JpaRepository<PaymentCardsEntity, Long> {
@@ -15,6 +19,7 @@ public interface PaymentCardsRepository extends JpaRepository<PaymentCardsEntity
     //Get all Cards by User id
     List<PaymentCardsEntity> findAllByUserId(Long userId);
 
+    long countByUserId(Long userId);
 
     //JPQL
     @Modifying
