@@ -114,15 +114,20 @@ public class UserServiceTest {
     }
 
     @Test
-    void deleteShouldDeleteUser() {
+    void deleteShouldDeactivateUser() {
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userMapper.toDTO(user)).thenReturn(userDTO);
 
         UserDTO result = userService.delete(1L);
 
-        verify(userRepository).delete(user);
+        assertFalse(user.getActive());
+        if (user.getCards() != null) {
+            user.getCards().forEach(card -> assertFalse(card.getActive()));
+        }
         assertEquals(userDTO.getId(), result.getId());
+
+        verify(userRepository).save(user);
     }
 
     @Test
