@@ -2,7 +2,7 @@ spring:
   main:
     allow-bean-definition-overriding: true
   application:
-    name: Innowise-tasks
+    name: user-service
   datasource:
     url: ${DB_URL:jdbc:postgresql://postgres:5432/myappdb}
     username: ${DB_USERNAME:user}

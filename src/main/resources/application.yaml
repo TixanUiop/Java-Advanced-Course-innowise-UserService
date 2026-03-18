@@ -2,9 +2,9 @@ spring:
   main:
     allow-bean-definition-overriding: true
   profiles:
-    active: local
+    active: docker
   application:
-    name: Innowise-tasks
+    name: user-service
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yaml
   jpa:

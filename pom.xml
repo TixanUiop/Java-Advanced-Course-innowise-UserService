@@ -13,10 +13,10 @@
     </parent>
 
     <groupId>com.evgeny</groupId>
-    <artifactId>Innowise-tasks</artifactId>
+    <artifactId>user-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Innowise-tasks</name>
-    <description>Innowise-tasks</description>
+    <name>user-service</name>
+    <description>user-service</description>
 
     <properties>
         <java.version>17</java.version>

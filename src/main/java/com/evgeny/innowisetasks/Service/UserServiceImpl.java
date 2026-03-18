@@ -41,6 +41,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException(id));
 
         user.setActive(false);
+        user.setActive(false);
 
         if (user.getCards() != null) {
             user.getCards().forEach(card -> card.setActive(false));
