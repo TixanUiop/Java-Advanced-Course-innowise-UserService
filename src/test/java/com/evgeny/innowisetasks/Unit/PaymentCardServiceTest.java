@@ -87,11 +87,11 @@ public class PaymentCardServiceTest {
     void shouldCreateSuccessfully() {
 
         CreatePaymentCardsDTO createPaymentCardsDTO =
-                new CreatePaymentCardsDTO("1234", LocalDate.now(), true, 1L);
+                new CreatePaymentCardsDTO("1234", LocalDate.now(), true, 7L);
 
         user.setCards(new ArrayList<>());
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.findByIdForUpdate(7L)).thenReturn(Optional.of(user));
         when(mapper.createToEntity(createPaymentCardsDTO)).thenReturn(card);
         when(mapper.toDTO(card)).thenReturn(cardDTO);
 
@@ -100,7 +100,7 @@ public class PaymentCardServiceTest {
         assertNotNull(result);
         assertEquals(cardDTO.getNumber(), result.getNumber());
 
-        verify(userRepository).findById(1L);
+        verify(userRepository).findByIdForUpdate(7L);
         verify(mapper).createToEntity(createPaymentCardsDTO);
         verify(mapper).toDTO(card);
 
@@ -111,24 +111,31 @@ public class PaymentCardServiceTest {
 
         CreatePaymentCardsDTO dto = new CreatePaymentCardsDTO("1234", LocalDate.now(), true, 1L);
 
-        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+        when(userRepository.findByIdForUpdate(1L)).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class,
                 () -> paymentCardService.create(dto));
 
-        verify(userRepository).findById(1L);
+        verify(userRepository).findByIdForUpdate(1L);
     }
 
     @Test
     void createShouldThrowCardLimitExceeded() {
 
-        CreatePaymentCardsDTO dto = new CreatePaymentCardsDTO("1234", LocalDate.now(), true, 1L);
+        long userId = 7L;
 
-        user.setCards(new ArrayList<>(Arrays.asList(
-                card, card, card, card, card
-        )));
+        CreatePaymentCardsDTO dto = new CreatePaymentCardsDTO(
+                "1234",
+                LocalDate.now(),
+                true,
+                userId
+        );
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        user.setId(userId);
+        user.setCards(new ArrayList<>(Arrays.asList(card, card, card, card, card)));
+
+        when(userRepository.findByIdForUpdate(userId)).thenReturn(Optional.of(user));
+        when(cardRepository.countByUserId(userId)).thenReturn(5L);
 
         assertThrows(CardLimitExceededException.class,
                 () -> paymentCardService.create(dto));
