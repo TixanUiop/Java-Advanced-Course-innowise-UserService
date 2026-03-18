@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
@@ -139,10 +140,12 @@ public class UserControllerIT {
     void testDeleteUser() {
         restTemplate.delete("/api/v1/users/delete/" + user.getId());
 
-        ResponseEntity<String> response =
-                restTemplate.getForEntity("/api/v1/users/" + user.getId(), String.class);
+        UserEntity deletedUser = userRepository.findById(user.getId()).orElseThrow();
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertFalse(deletedUser.getActive());
+        if (deletedUser.getCards() != null) {
+            deletedUser.getCards().forEach(card -> assertFalse(card.getActive()));
+        }
     }
 
     @Test
