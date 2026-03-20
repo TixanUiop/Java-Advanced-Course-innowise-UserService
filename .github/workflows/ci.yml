@@ -40,8 +40,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build package
-        run: mvn clean package -DskipTests=false
+      - name: Build package without tests
+        run: mvn clean package -DskipTests
 
       - name: Wait for Postgres
         run: |
