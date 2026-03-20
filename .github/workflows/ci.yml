@@ -55,7 +55,8 @@ jobs:
         run: |
           echo "Waiting for Postgres to be ready..."
           POSTGRES_HOST=${{ job.services.postgres.hostname }}
-          until PGPASSWORD=$DB_PASSWORD psql -h $POSTGRES_HOST -U $DB_USERNAME -d myappdb -c '\q'; do
+          echo "Postgres host: $POSTGRES_HOST"
+          until PGPASSWORD=$DB_PASSWORD psql -h "$POSTGRES_HOST" -U "$DB_USERNAME" -d myappdb -c '\q'; do
             echo "Postgres is not ready yet..."
             sleep 2
           done
@@ -64,8 +65,8 @@ jobs:
       - name: Wait for Redis health
         run: |
           REDIS_HOST=${{ job.services.redis.hostname }}
-          echo "Waiting for Redis to be ready..."
-          until redis-cli -h $REDIS_HOST ping | grep PONG; do
+          echo "Redis host: $REDIS_HOST"
+          until redis-cli -h "$REDIS_HOST" ping | grep PONG; do
             echo "Redis is not ready yet..."
             sleep 2
           done
