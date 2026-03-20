@@ -13,6 +13,10 @@ jobs:
     services:
       postgres:
         image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: myappdb
         options: >-
           --health-cmd="pg_isready -U user -d myappdb" 
           --health-interval=5s 
