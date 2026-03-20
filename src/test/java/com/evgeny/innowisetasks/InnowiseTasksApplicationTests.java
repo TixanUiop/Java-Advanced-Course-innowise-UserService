@@ -8,6 +8,7 @@ class InnowiseTasksApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }
