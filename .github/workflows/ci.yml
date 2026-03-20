@@ -19,7 +19,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Start services
-        run: docker-compose up -d
+        run: docker compose up -d
 
       - name: Wait for Postgres
         run: |
