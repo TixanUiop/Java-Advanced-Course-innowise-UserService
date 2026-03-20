@@ -18,6 +18,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Start services
+        run: docker-compose up -d
+
+      - name: Wait for Postgres
+        run: |
+          until nc -z postgres 5432; do sleep 1; done
+
+      - name: Wait for Redis
+        run: |
+          until nc -z redis 6379; do sleep 1; done
+
       - name: Build
         run: mvn clean install
 
