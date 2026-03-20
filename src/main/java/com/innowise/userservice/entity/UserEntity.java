@@ -1,4 +1,4 @@
-package com.innowise.innowisetasks.entity;
+package com.innowise.userservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package com.innowise.innowisetasks.exception;
+package com.innowise.userservice.exception;
 
 public class UserAlreadyExistsException extends RuntimeException {
     public UserAlreadyExistsException(String email) {

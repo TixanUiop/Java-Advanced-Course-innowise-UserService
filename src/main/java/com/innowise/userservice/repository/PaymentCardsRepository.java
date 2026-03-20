@@ -1,6 +1,6 @@
-package com.innowise.innowisetasks.repository;
+package com.innowise.userservice.repository;
 
-import com.innowise.innowisetasks.entity.PaymentCardsEntity;
+import com.innowise.userservice.entity.PaymentCardsEntity;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;

@@ -1,16 +1,16 @@
-package com.innowise.innowisetasks.service;
+package com.innowise.userservice.service;
 
 
-import com.innowise.innowisetasks.dto.CreateUserDTO;
-import com.innowise.innowisetasks.dto.PaymentCardsDTO;
-import com.innowise.innowisetasks.dto.UserDTO;
-import com.innowise.innowisetasks.entity.UserEntity;
-import com.innowise.innowisetasks.exception.StatusChangeErrorException;
-import com.innowise.innowisetasks.exception.UserAlreadyExistsException;
-import com.innowise.innowisetasks.exception.UserNotFoundException;
-import com.innowise.innowisetasks.mapper.UserMapper;
-import com.innowise.innowisetasks.repository.UserRepository;
-import com.innowise.innowisetasks.specification.UserSpecifications;
+import com.innowise.userservice.dto.CreateUserDTO;
+import com.innowise.userservice.dto.PaymentCardsDTO;
+import com.innowise.userservice.dto.UserDTO;
+import com.innowise.userservice.entity.UserEntity;
+import com.innowise.userservice.exception.StatusChangeErrorException;
+import com.innowise.userservice.exception.UserAlreadyExistsException;
+import com.innowise.userservice.exception.UserNotFoundException;
+import com.innowise.userservice.mapper.UserMapper;
+import com.innowise.userservice.repository.UserRepository;
+import com.innowise.userservice.specification.UserSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;

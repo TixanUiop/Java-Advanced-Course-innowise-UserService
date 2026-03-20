@@ -1,6 +1,6 @@
-package com.innowise.innowisetasks.repository;
+package com.innowise.userservice.repository;
 
-import com.innowise.innowisetasks.entity.UserEntity;
+import com.innowise.userservice.entity.UserEntity;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

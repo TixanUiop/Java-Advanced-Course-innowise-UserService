@@ -1,6 +1,6 @@
-package com.innowise.innowisetasks.exception.exceptionHandler;
+package com.innowise.userservice.exception.exceptionHandler;
 
-import com.innowise.innowisetasks.exception.*;
+import com.innowise.userservice.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

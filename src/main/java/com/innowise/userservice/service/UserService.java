@@ -1,8 +1,8 @@
-package com.innowise.innowisetasks.service;
+package com.innowise.userservice.service;
 
-import com.innowise.innowisetasks.dto.CreateUserDTO;
-import com.innowise.innowisetasks.dto.PaymentCardsDTO;
-import com.innowise.innowisetasks.dto.UserDTO;
+import com.innowise.userservice.dto.CreateUserDTO;
+import com.innowise.userservice.dto.PaymentCardsDTO;
+import com.innowise.userservice.dto.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

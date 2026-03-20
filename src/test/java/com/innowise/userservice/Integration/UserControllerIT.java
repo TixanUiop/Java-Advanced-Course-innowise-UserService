@@ -1,9 +1,9 @@
-package com.innowise.innowisetasks.Integration;
+package com.innowise.userservice.Integration;
 
-import com.innowise.innowisetasks.dto.CreateUserDTO;
-import com.innowise.innowisetasks.dto.UserDTO;
-import com.innowise.innowisetasks.entity.UserEntity;
-import com.innowise.innowisetasks.repository.UserRepository;
+import com.innowise.userservice.dto.CreateUserDTO;
+import com.innowise.userservice.dto.UserDTO;
+import com.innowise.userservice.entity.UserEntity;
+import com.innowise.userservice.repository.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

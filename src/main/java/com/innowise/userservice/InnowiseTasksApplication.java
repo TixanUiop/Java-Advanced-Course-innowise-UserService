@@ -1,4 +1,4 @@
-package com.innowise.innowisetasks;
+package com.innowise.userservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,8 +11,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaAuditing
 @EnableCaching
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.innowise.innowisetasks.repository")
-@EntityScan(basePackages = "com.innowise.innowisetasks.entity")
+@EnableJpaRepositories(basePackages = "com.innowise.userservice.repository")
+@EntityScan(basePackages = "com.innowise.userservice.entity")
 public class InnowiseTasksApplication {
 
     public static void main(String[] args) {

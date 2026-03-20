@@ -1,8 +1,8 @@
-package com.innowise.innowisetasks.mapper;
+package com.innowise.userservice.mapper;
 
-import com.innowise.innowisetasks.dto.CreatePaymentCardsDTO;
-import com.innowise.innowisetasks.dto.PaymentCardsDTO;
-import com.innowise.innowisetasks.entity.PaymentCardsEntity;
+import com.innowise.userservice.dto.CreatePaymentCardsDTO;
+import com.innowise.userservice.dto.PaymentCardsDTO;
+import com.innowise.userservice.entity.PaymentCardsEntity;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 

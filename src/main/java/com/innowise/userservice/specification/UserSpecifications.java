@@ -1,6 +1,6 @@
-package com.innowise.innowisetasks.specification;
+package com.innowise.userservice.specification;
 
-import com.innowise.innowisetasks.entity.UserEntity;
+import com.innowise.userservice.entity.UserEntity;
 import org.springframework.data.jpa.domain.Specification;
 
 public class UserSpecifications {

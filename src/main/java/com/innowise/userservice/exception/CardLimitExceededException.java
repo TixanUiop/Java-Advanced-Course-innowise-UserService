@@ -1,4 +1,4 @@
-package com.innowise.innowisetasks.exception;
+package com.innowise.userservice.exception;
 
 public class CardLimitExceededException extends RuntimeException {
     public CardLimitExceededException(Long userId) {

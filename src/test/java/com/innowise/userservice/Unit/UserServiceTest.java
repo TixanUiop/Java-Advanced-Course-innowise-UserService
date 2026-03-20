@@ -1,19 +1,19 @@
-package com.innowise.innowisetasks.Unit;
+package com.innowise.userservice.Unit;
 
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import com.innowise.innowisetasks.dto.CreateUserDTO;
-import com.innowise.innowisetasks.dto.PaymentCardsDTO;
-import com.innowise.innowisetasks.dto.UserDTO;
-import com.innowise.innowisetasks.entity.PaymentCardsEntity;
-import com.innowise.innowisetasks.entity.UserEntity;
-import com.innowise.innowisetasks.exception.StatusChangeErrorException;
-import com.innowise.innowisetasks.exception.UserAlreadyExistsException;
-import com.innowise.innowisetasks.exception.UserNotFoundException;
-import com.innowise.innowisetasks.mapper.UserMapper;
-import com.innowise.innowisetasks.repository.UserRepository;
-import com.innowise.innowisetasks.service.UserServiceImpl;
+import com.innowise.userservice.dto.CreateUserDTO;
+import com.innowise.userservice.dto.PaymentCardsDTO;
+import com.innowise.userservice.dto.UserDTO;
+import com.innowise.userservice.entity.PaymentCardsEntity;
+import com.innowise.userservice.entity.UserEntity;
+import com.innowise.userservice.exception.StatusChangeErrorException;
+import com.innowise.userservice.exception.UserAlreadyExistsException;
+import com.innowise.userservice.exception.UserNotFoundException;
+import com.innowise.userservice.mapper.UserMapper;
+import com.innowise.userservice.repository.UserRepository;
+import com.innowise.userservice.service.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

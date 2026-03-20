@@ -1,10 +1,10 @@
-package com.innowise.innowisetasks.controller;
+package com.innowise.userservice.controller;
 
 
-import com.innowise.innowisetasks.dto.CreateUserDTO;
-import com.innowise.innowisetasks.dto.PaymentCardsDTO;
-import com.innowise.innowisetasks.dto.UserDTO;
-import com.innowise.innowisetasks.service.UserService;
+import com.innowise.userservice.dto.CreateUserDTO;
+import com.innowise.userservice.dto.PaymentCardsDTO;
+import com.innowise.userservice.dto.UserDTO;
+import com.innowise.userservice.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;

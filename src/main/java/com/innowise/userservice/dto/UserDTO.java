@@ -1,6 +1,6 @@
-package com.innowise.innowisetasks.dto;
+package com.innowise.userservice.dto;
 
-import com.innowise.innowisetasks.entity.PaymentCardsEntity;
+import com.innowise.userservice.entity.PaymentCardsEntity;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

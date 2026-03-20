@@ -1,4 +1,4 @@
-package com.innowise.innowisetasks.configuration;
+package com.innowise.userservice.configuration;
 
 
 import org.springframework.cache.CacheManager;

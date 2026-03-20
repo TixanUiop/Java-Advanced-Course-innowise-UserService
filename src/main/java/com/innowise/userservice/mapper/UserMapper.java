@@ -1,8 +1,8 @@
-package com.innowise.innowisetasks.mapper;
+package com.innowise.userservice.mapper;
 
-import com.innowise.innowisetasks.dto.CreateUserDTO;
-import com.innowise.innowisetasks.dto.UserDTO;
-import com.innowise.innowisetasks.entity.UserEntity;
+import com.innowise.userservice.dto.CreateUserDTO;
+import com.innowise.userservice.dto.UserDTO;
+import com.innowise.userservice.entity.UserEntity;
 import org.mapstruct.Mapper;
 
 import java.util.List;

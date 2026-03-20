@@ -1,4 +1,4 @@
-package com.innowise.innowisetasks.exception;
+package com.innowise.userservice.exception;
 
 public class CardStatusChangeException extends RuntimeException {
     public CardStatusChangeException(Long cardId) {
