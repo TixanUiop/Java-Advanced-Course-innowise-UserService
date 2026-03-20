@@ -17,8 +17,6 @@ jobs:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: password
           POSTGRES_DB: myappdb
-        ports:
-          - 5432:5432
         options: >-
           --health-cmd="pg_isready -U user -d myappdb" 
           --health-interval=5s 
@@ -27,8 +25,6 @@ jobs:
 
       redis:
         image: redis:7
-        ports:
-          - 6379:6379
         options: >-
           --health-cmd="redis-cli ping" 
           --health-interval=5s 
@@ -47,19 +43,13 @@ jobs:
       - name: Build package
         run: mvn clean package -DskipTests=false
 
-      - name: Build Docker Image
-        run: docker build -t spring_app:latest .
-
-      - name: Start app with Docker Compose
-        run: docker compose up -d
-
       - name: Wait for Postgres
         run: |
-          until nc -z localhost 5432; do sleep 1; done
+          until nc -z postgres 5432; do sleep 1; done
 
       - name: Wait for Redis
         run: |
-          until nc -z localhost 6379; do sleep 1; done
+          until nc -z redis 6379; do sleep 1; done
 
       - name: Run Integration Tests
         run: mvn verify -Pintegration-tests
@@ -71,3 +61,6 @@ jobs:
           -Dsonar.projectKey=my-java-project \
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.login=$SONAR_TOKEN
+
+      - name: Build Docker Image
+        run: docker build -t spring_app:latest .
