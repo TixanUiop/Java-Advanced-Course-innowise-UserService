@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,18 +31,21 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal == #id")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@Positive @PathVariable Long id) {
         UserDTO user = userService.getById(id);
         return ResponseEntity.ok(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<UserDTO> create(@Valid @RequestBody CreateUserDTO dto) {
         UserDTO created = userService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal == #id")
     @PutMapping("/update/{id}")
     public ResponseEntity<UserDTO> update(
             @Positive @PathVariable Long id,
@@ -50,30 +54,35 @@ public class UserController {
         return ResponseEntity.ok(updated);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@Positive @PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/activate/{id}")
     public ResponseEntity<Void> activate(@Positive @PathVariable Long id) {
         userService.activate(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/deactivate/{id}")
     public ResponseEntity<Void> deactivate(@Positive @PathVariable Long id) {
         userService.deactivate(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal == #id")
     @GetMapping("/get-cards-users-by-id/{id}")
     public ResponseEntity<List<PaymentCardsDTO>> getCardsById(@Positive @PathVariable Long id) {
         List<PaymentCardsDTO> cards = userService.getCardsByUserId(id);
         return ResponseEntity.ok(cards);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<Page<UserDTO>> getAllUsers(
             @RequestParam(required = false, defaultValue = "") String name,
