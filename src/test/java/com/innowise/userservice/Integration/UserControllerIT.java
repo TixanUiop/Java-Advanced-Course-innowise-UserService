@@ -1,15 +1,16 @@
 package com.innowise.userservice.Integration;
 
+import com.innowise.userservice.Util.TestJwtUtil;
 import com.innowise.userservice.dto.CreateUserDTO;
 import com.innowise.userservice.dto.UserDTO;
 import com.innowise.userservice.entity.UserEntity;
 import com.innowise.userservice.repository.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -20,7 +21,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -28,7 +28,6 @@ import static org.junit.Assert.assertFalse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @ActiveProfiles("test")
-
 public class UserControllerIT {
 
     @Container
@@ -52,6 +51,7 @@ public class UserControllerIT {
     private UserRepository userRepository;
 
     private UserEntity user;
+    private String adminToken;
 
     @BeforeEach
     void setup() {
@@ -65,6 +65,15 @@ public class UserControllerIT {
         user.setActive(true);
         user.setCards(new ArrayList<>());
         user = userRepository.save(user);
+
+        adminToken = TestJwtUtil.generateTestToken(1L, "ADMIN");
+    }
+
+    private HttpHeaders headersWithToken(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
     }
 
     private UserDTO createUserViaApi(String name, String surname, String email) {
@@ -74,8 +83,9 @@ public class UserControllerIT {
         dto.setEmail(email);
         dto.setBirthDate(LocalDate.of(1990, 1, 1));
 
+        HttpEntity<CreateUserDTO> request = new HttpEntity<>(dto, headersWithToken(adminToken));
         ResponseEntity<UserDTO> response =
-                restTemplate.postForEntity("/api/v1/users/create", dto, UserDTO.class);
+                restTemplate.exchange("/api/v1/users/create", HttpMethod.POST, request, UserDTO.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         return response.getBody();
@@ -84,7 +94,6 @@ public class UserControllerIT {
     @Test
     void testCreateUser() {
         UserDTO user = createUserViaApi("Alice", "Smith", "alice@test.com");
-
         assertThat(user).isNotNull();
         assertThat(user.getName()).isEqualTo("Alice");
         assertThat(user.getEmail()).isEqualTo("alice@test.com");
@@ -92,8 +101,10 @@ public class UserControllerIT {
 
     @Test
     void testGetUserById() {
+        HttpEntity<Void> request = new HttpEntity<>(headersWithToken(adminToken));
         ResponseEntity<UserDTO> response =
-                restTemplate.getForEntity("/api/v1/users/" + user.getId(), UserDTO.class);
+                restTemplate.exchange("/api/v1/users/" + user.getId(),
+                        HttpMethod.GET, request, UserDTO.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getId()).isEqualTo(user.getId());
@@ -108,10 +119,8 @@ public class UserControllerIT {
         dto.setEmail("johnupdated@test.com");
         dto.setBirthDate(LocalDate.of(1990,1,1));
         dto.setActive(true);
-        Optional<UserEntity> byId = userRepository.findById(dto.getId());
-        Assertions.assertThat(byId.isPresent()).isTrue();
 
-        HttpEntity<UserDTO> request = new HttpEntity<>(dto);
+        HttpEntity<UserDTO> request = new HttpEntity<>(dto, headersWithToken(adminToken));
 
         ResponseEntity<UserDTO> response =
                 restTemplate.exchange("/api/v1/users/update/" + dto.getId(),
@@ -123,20 +132,24 @@ public class UserControllerIT {
 
     @Test
     void testActivateDeactivateUser() {
-        // Deactivate
+        HttpEntity<Void> request = new HttpEntity<>(headersWithToken(adminToken));
+
         ResponseEntity<Void> deactivate =
-                restTemplate.postForEntity("/api/v1/users/deactivate/" + user.getId(), null, Void.class);
+                restTemplate.exchange("/api/v1/users/deactivate/" + user.getId(),
+                        HttpMethod.POST, request, Void.class);
         assertThat(deactivate.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
-        // Activate
         ResponseEntity<Void> activate =
-                restTemplate.postForEntity("/api/v1/users/activate/" + user.getId(), null, Void.class);
+                restTemplate.exchange("/api/v1/users/activate/" + user.getId(),
+                        HttpMethod.POST, request, Void.class);
         assertThat(activate.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
     @Test
     void testDeleteUser() {
-        restTemplate.delete("/api/v1/users/delete/" + user.getId());
+        HttpEntity<Void> request = new HttpEntity<>(headersWithToken(adminToken));
+        restTemplate.exchange("/api/v1/users/delete/" + user.getId(),
+                HttpMethod.DELETE, request, Void.class);
 
         UserEntity deletedUser = userRepository.findById(user.getId()).orElseThrow();
 
@@ -151,22 +164,28 @@ public class UserControllerIT {
         createUserViaApi("Alice", "Smith", "alice@test.com");
         createUserViaApi("Bob", "Brown", "bob@test.com");
 
-        ResponseEntity<Map> response =
-                restTemplate.getForEntity("/api/v1/users?page=0&size=10", Map.class);
+        HttpEntity<Void> request = new HttpEntity<>(headersWithToken(adminToken));
+
+        ResponseEntity<Map<String, Object>> response =
+                restTemplate.exchange("/api/v1/users?page=0&size=10",
+                        HttpMethod.GET, request, new ParameterizedTypeReference<>() {});
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        Map body = response.getBody();
+        Map<String, Object> body = response.getBody();
         assertThat(body).isNotNull();
 
-        List users = (List) body.get("content");
+        List<?> users = (List<?>) body.get("content");
         assertThat(users.size()).isGreaterThanOrEqualTo(3);
     }
 
     @Test
     void testGetCardsByUserId() {
+        HttpEntity<Void> request = new HttpEntity<>(headersWithToken(adminToken));
+
         ResponseEntity<List> response =
-                restTemplate.getForEntity("/api/v1/users/get-cards-users-by-id/" + user.getId(), List.class);
+                restTemplate.exchange("/api/v1/users/get-cards-users-by-id/" + user.getId(),
+                        HttpMethod.GET, request, List.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
