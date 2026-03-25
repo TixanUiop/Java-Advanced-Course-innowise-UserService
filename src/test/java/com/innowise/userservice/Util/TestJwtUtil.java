@@ -2,6 +2,7 @@ package com.innowise.userservice.Util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -10,10 +11,13 @@ import java.util.Date;
 @Component
 public class TestJwtUtil {
 
-    private static final String SECRET = "com-innowise-authentication-service-secret-key";
-    private static final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private final Key key;
 
-    public static String generateTestToken(Long userId, String role) {
+    public TestJwtUtil(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
+    public String generateTestToken(Long userId, String role) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .claim("role", role)
@@ -22,4 +26,23 @@ public class TestJwtUtil {
                 .signWith(key)
                 .compact();
     }
+
+//    private static Key key;
+//
+//
+//    private static final String SECRET = "com-innowise-authentication-service-secret-key";
+//
+//    static {
+//        key = Keys.hmacShaKeyFor(SECRET.getBytes());
+//    }
+//
+//    public static String generateTestToken(Long userId, String role) {
+//        return Jwts.builder()
+//                .setSubject(userId.toString())
+//                .claim("role", role)
+//                .setIssuedAt(new Date())
+//                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
+//                .signWith(key)
+//                .compact();
+//    }
 }

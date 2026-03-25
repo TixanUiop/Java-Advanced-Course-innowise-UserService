@@ -8,6 +8,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -17,11 +18,15 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private final String SECRET = "com-innowise-authentication-service-secret-key";
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private Key key;
 
     private final long accessTokenExpiration = 1000 * 60 * 15;
     private final long refreshTokenExpiration = 1000 * 60 * 60 * 24;
+
+
+    public JwtUtil(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
     public String generateToken(Long userId, AuthRole role)
     {

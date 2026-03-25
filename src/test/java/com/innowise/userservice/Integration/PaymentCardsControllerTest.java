@@ -55,6 +55,9 @@ public class PaymentCardsControllerTest {
     @Autowired
     private PaymentCardsRepository cardsRepository;
 
+    @Autowired
+    private TestJwtUtil testJwtUtil;
+
     private UserEntity user;
     private String adminToken;
 
@@ -72,7 +75,7 @@ public class PaymentCardsControllerTest {
         user.setCards(new ArrayList<>());
         user = userRepository.save(user);
 
-        adminToken = TestJwtUtil.generateTestToken(1L, "ADMIN");
+        adminToken = testJwtUtil.generateTestToken(1L, "ADMIN");
     }
 
     private HttpHeaders headersWithToken(String token) {
