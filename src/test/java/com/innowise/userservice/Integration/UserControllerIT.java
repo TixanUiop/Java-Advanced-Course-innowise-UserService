@@ -44,6 +44,7 @@ public class UserControllerIT {
         System.setProperty("spring.datasource.password", postgres.getPassword());
     }
 
+
     @Autowired
     private TestRestTemplate restTemplate;
 
@@ -93,6 +94,37 @@ public class UserControllerIT {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         return response.getBody();
     }
+
+    @Test
+    void testGetUserByInvalidIdReturnsNotFound() {
+        HttpEntity<Void> request = new HttpEntity<>(headersWithToken(adminToken));
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/users/999999", HttpMethod.GET, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).contains("User not found");
+    }
+
+    @Test
+    void testUpdateUserInvalidIdReturnsNotFound() {
+        UserDTO dto = new UserDTO();
+        dto.setId(999999L);
+        dto.setName("NoName");
+        dto.setSurname("NoSurname");
+        dto.setEmail("nonexistent@test.com");
+        dto.setBirthDate(LocalDate.of(1990,1,1));
+        dto.setActive(true);
+
+        HttpEntity<UserDTO> request = new HttpEntity<>(dto, headersWithToken(adminToken));
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/users/update/" + dto.getId(),
+                        HttpMethod.PUT, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).contains("User not found");
+    }
+
 
     @Test
     void testCreateUser() {
