@@ -216,4 +216,50 @@ public class UserServiceTest {
         assertEquals(1,result.size());
         assertEquals("1234",result.get(0).getNumber());
     }
+
+    @Test
+    void getCardsByUserIdShouldReturnEmptyListIfNoCards() {
+        user.setCards(List.of());
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        List<PaymentCardsDTO> result = userService.getCardsByUserId(1L);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void deleteShouldWorkWhenUserHasNoCards() {
+        user.setCards(null);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userMapper.toDTO(user)).thenReturn(userDTO);
+
+        UserDTO result = userService.delete(1L);
+
+        assertFalse(user.getActive());
+        assertEquals(userDTO.getId(), result.getId());
+
+        verify(userRepository).save(user);
+    }
+
+    @Test
+    void updateShouldThrowExceptionIfUserNotFound() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class,
+                () -> userService.update(userDTO));
+    }
+
+    @Test
+    void getAllShouldReturnEmptyPageIfNoUsers() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<UserEntity> emptyPage = new PageImpl<>(List.of());
+        when(userRepository.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(emptyPage);
+
+        Page<UserDTO> result = userService.getAll("unknown", "unknown", pageable);
+
+        assertNotNull(result);
+        assertEquals(0, result.getTotalElements());
+    }
 }
