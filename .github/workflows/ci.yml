@@ -55,8 +55,8 @@ jobs:
       - name: Install PostgreSQL client
         run: sudo apt-get update && sudo apt-get install -y postgresql-client redis-tools
 
-      - name: Build package without tests
-        run: mvn clean package -DskipTests
+#      - name: Build package without tests
+##        run: mvn clean package -DskipTests
 
       - name: Wait for Postgres health
         run: |
@@ -93,14 +93,16 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn sonar:sonar \
-            -Dsonar.projectKey=TixanUiop_Java-Advanced-Course-innowise-UserService \
-            -Dsonar.organization=tixanuiop \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-            -Dsonar.pullrequest.base=${{ github.base_ref }}
+          mvn verify sonar:sonar \
+          -Pdocker \
+          -Dsonar.projectKey=TixanUiop_Java-Advanced-Course-innowise-UserService \
+          -Dsonar.organization=tixanuiop \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=$SONAR_TOKEN \
+          -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+          -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+          -Dsonar.pullrequest.base=${{ github.base_ref }} \
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
       - name: Build Docker Image
         run: docker build -t spring_app:latest .

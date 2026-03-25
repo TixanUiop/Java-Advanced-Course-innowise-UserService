@@ -26,23 +26,4 @@ public class TestJwtUtil {
                 .signWith(key)
                 .compact();
     }
-
-//    private static Key key;
-//
-//
-//    private static final String SECRET = "com-innowise-authentication-service-secret-key";
-//
-//    static {
-//        key = Keys.hmacShaKeyFor(SECRET.getBytes());
-//    }
-//
-//    public static String generateTestToken(Long userId, String role) {
-//        return Jwts.builder()
-//                .setSubject(userId.toString())
-//                .claim("role", role)
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15))
-//                .signWith(key)
-//                .compact();
-//    }
 }
