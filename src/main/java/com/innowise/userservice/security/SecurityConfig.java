@@ -17,17 +17,22 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                // CSRF is disabled because we use stateless JWT authentication
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/public/**").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers("/auth/**").permitAll()
 
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        .requestMatchers("/users/**").hasAnyRole("USER", "ADMIN")
+
+                        .anyRequest().authenticated()
+                );
         return http.build();
     }
+
+
+
 }
