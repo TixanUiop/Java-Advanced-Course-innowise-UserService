@@ -97,6 +97,34 @@ public class UserControllerIT {
 
 
     @Test
+    void testGetUserByIdNotFound() {
+        String token = adminToken;
+        HttpEntity<Void> request = new HttpEntity<>(headersWithToken(token));
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/users/999999",
+                        HttpMethod.GET, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).contains("User not found with id: 999999");
+    }
+
+    @Test
+    void testDeleteUserForbiddenForNonAdmin() {
+        String userToken = testJwtUtil.generateTestToken(user.getId(), "USER");
+        HttpEntity<Void> request = new HttpEntity<>(headersWithToken(userToken));
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                "/api/v1/users/delete/" + user.getId(),
+                HttpMethod.DELETE,
+                request,
+                String.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
     void testGetUserWithoutTokenReturnsUnauthorized() {
         HttpEntity<Void> request = new HttpEntity<>(new HttpHeaders());
 
