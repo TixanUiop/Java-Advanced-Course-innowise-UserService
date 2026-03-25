@@ -95,6 +95,41 @@ public class UserControllerIT {
         return response.getBody();
     }
 
+
+    @Test
+    void testGetUserWithoutTokenReturnsUnauthorized() {
+        HttpEntity<Void> request = new HttpEntity<>(new HttpHeaders());
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/users/" + user.getId(),
+                        HttpMethod.GET, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+
+    @Test
+    void testGetUserByNegativeIdReturnsBadRequest() {
+        HttpEntity<Void> request = new HttpEntity<>(headersWithToken(adminToken));
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/users/-1", HttpMethod.GET, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void testDeleteUserWithoutAdminRoleReturnsForbidden() {
+        String userToken = testJwtUtil.generateTestToken(user.getId(), "USER");
+        HttpEntity<Void> request = new HttpEntity<>(headersWithToken(userToken));
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/users/delete/" + user.getId(),
+                        HttpMethod.DELETE, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
     @Test
     void testGetUserByInvalidIdReturnsNotFound() {
         HttpEntity<Void> request = new HttpEntity<>(headersWithToken(adminToken));
