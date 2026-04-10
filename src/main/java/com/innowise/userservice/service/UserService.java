@@ -24,5 +24,7 @@ public interface UserService {
 
     Boolean deactivate(Long id);
 
+    UserDTO getByEmail(String email);
+
     List<PaymentCardsDTO> getCardsByUserId(Long userId);
 }

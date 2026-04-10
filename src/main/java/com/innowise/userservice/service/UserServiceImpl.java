@@ -8,6 +8,7 @@ import com.innowise.userservice.entity.UserEntity;
 import com.innowise.userservice.exception.StatusChangeErrorException;
 import com.innowise.userservice.exception.UserAlreadyExistsException;
 import com.innowise.userservice.exception.UserNotFoundException;
+import com.innowise.userservice.exception.UserNotFoundWithEmailException;
 import com.innowise.userservice.mapper.UserMapper;
 import com.innowise.userservice.repository.UserRepository;
 import com.innowise.userservice.specification.UserSpecifications;
@@ -27,6 +28,8 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
+
+
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
@@ -34,6 +37,14 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+    }
+
+    @Override
+    public UserDTO getByEmail(String email) {
+        UserEntity user = userRepository.findByEmail(email)
+
+                .orElseThrow(() -> new UserNotFoundWithEmailException(email));
+        return userMapper.toDTO(user);
     }
 
     @CacheEvict(value = "users", key = "#id")

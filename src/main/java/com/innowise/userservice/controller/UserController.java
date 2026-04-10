@@ -6,6 +6,8 @@ import com.innowise.userservice.dto.PaymentCardsDTO;
 import com.innowise.userservice.dto.UserDTO;
 import com.innowise.userservice.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +32,13 @@ public class UserController {
         this.userService = userService;
     }
 
+
+    @PreAuthorize("hasRole('ADMIN') or authentication.principal == #id")
+    @GetMapping("/email/{email}")
+    public ResponseEntity<UserDTO> getUserByEmail(@Email @NotBlank @PathVariable String email) {
+        UserDTO user = userService.getByEmail(email);
+        return ResponseEntity.ok(user);
+    }
 
     @PreAuthorize("hasRole('ADMIN') or authentication.principal == #id")
     @GetMapping("/{id}")
