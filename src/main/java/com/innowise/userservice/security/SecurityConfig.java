@@ -26,6 +26,8 @@ public class SecurityConfig {
                 // CSRF disabled because application uses stateless JWT authentication
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/v1/users/create").hasAnyRole("SERVICE", "ADMIN")
+                        .requestMatchers("/api/v1/users/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/v1/payment-cards/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/users/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()

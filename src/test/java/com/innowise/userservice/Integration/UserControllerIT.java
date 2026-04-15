@@ -135,7 +135,7 @@ public class UserControllerIT {
                 restTemplate.exchange("/api/v1/users/" + user.getId(),
                         HttpMethod.GET, request, String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
 
