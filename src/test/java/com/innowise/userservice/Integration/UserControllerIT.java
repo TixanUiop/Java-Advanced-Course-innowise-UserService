@@ -343,4 +343,102 @@ public class UserControllerIT {
         assertThat(content).isEmpty();
     }
 
+    @Test
+    void testInvalidTokenReturnsUnauthorized() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth("broken.token.here");
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/users/1",
+                        HttpMethod.GET, request, String.class);
+
+        assertThat(response.getStatusCode())
+                .isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void testPaginationBoundary() {
+        HttpEntity<Void> request =
+                new HttpEntity<>(headersWithToken(adminToken));
+
+        ResponseEntity<Map<String, Object>> response =
+                restTemplate.exchange("/api/v1/users?page=9999&size=10",
+                        HttpMethod.GET, request,
+                        new ParameterizedTypeReference<>() {});
+
+        assertThat(response.getStatusCode())
+                .isEqualTo(HttpStatus.OK);
+
+        Map<String, Object> body = response.getBody();
+        assertThat(body).isNotNull();
+
+        List<?> content = (List<?>) body.get("content");
+        assertThat(content).isEmpty(); // вот это главное
+    }
+
+    @Test
+    void testUserRoleCannotCreateUser() {
+        String userToken = testJwtUtil.generateTestToken(1L, "USER");
+
+        CreateUserDTO dto = new CreateUserDTO();
+        dto.setName("Test");
+        dto.setSurname("Test");
+        dto.setEmail("test@test.com");
+        dto.setBirthDate(LocalDate.of(1990,1,1));
+
+        HttpEntity<CreateUserDTO> request =
+                new HttpEntity<>(dto, headersWithToken(userToken));
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/users/create",
+                        HttpMethod.POST, request, String.class);
+
+        assertThat(response.getStatusCode())
+                .isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void testServiceRoleCanCreateUser() {
+        String serviceToken = testJwtUtil.generateTestToken(1L, "SERVICE");
+
+        CreateUserDTO dto = new CreateUserDTO();
+        dto.setName("Test");
+        dto.setSurname("Test");
+        dto.setEmail("service@test.com");
+        dto.setBirthDate(LocalDate.of(1990,1,1));
+
+        HttpEntity<CreateUserDTO> request =
+                new HttpEntity<>(dto, headersWithToken(serviceToken));
+
+        ResponseEntity<UserDTO> response =
+                restTemplate.exchange("/api/v1/users/create",
+                        HttpMethod.POST, request, UserDTO.class);
+
+        assertThat(response.getStatusCode())
+                .isEqualTo(HttpStatus.CREATED);
+    }
+
+    @Test
+    void testAdminCanCreateUser() {
+        String adminToken = testJwtUtil.generateTestToken(1L, "ADMIN");
+
+        CreateUserDTO dto = new CreateUserDTO();
+        dto.setName("Admin");
+        dto.setSurname("Test");
+        dto.setEmail("admin@test.com");
+        dto.setBirthDate(LocalDate.of(1990,1,1));
+
+        HttpEntity<CreateUserDTO> request =
+                new HttpEntity<>(dto, headersWithToken(adminToken));
+
+        ResponseEntity<UserDTO> response =
+                restTemplate.exchange("/api/v1/users/create",
+                        HttpMethod.POST, request, UserDTO.class);
+
+        assertThat(response.getStatusCode())
+                .isEqualTo(HttpStatus.CREATED);
+    }
+
 }

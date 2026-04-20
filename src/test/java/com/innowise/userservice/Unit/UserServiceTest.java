@@ -264,4 +264,18 @@ public class UserServiceTest {
         assertNotNull(result);
         assertEquals(0, result.getTotalElements());
     }
+
+    @Test
+    void deleteShouldHandleNullCards() {
+        user.setCards(null);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userMapper.toDTO(user)).thenReturn(userDTO);
+
+        userService.delete(1L);
+
+        assertFalse(user.getActive());
+    }
+
+
 }

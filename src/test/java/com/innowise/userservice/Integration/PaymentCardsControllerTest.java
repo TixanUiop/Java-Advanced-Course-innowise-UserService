@@ -249,4 +249,23 @@ public class PaymentCardsControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
+
+    @Test
+    void testCreateCardWithNullUserShouldFail() {
+        CreatePaymentCardsDTO dto = new CreatePaymentCardsDTO();
+        dto.setNumber("1234");
+        dto.setExpirationDate(LocalDate.of(2030,1,1));
+        dto.setUserId(null);
+
+        HttpEntity<CreatePaymentCardsDTO> request =
+                new HttpEntity<>(dto, headersWithToken(adminToken));
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/payment-cards/create",
+                        HttpMethod.POST, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+
 }
