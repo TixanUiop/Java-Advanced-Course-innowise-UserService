@@ -189,4 +189,64 @@ public class PaymentCardsControllerTest {
         card.setUser(user);
         return cardsRepository.save(card);
     }
+
+    @Test
+    void testCreateCardUserNotFound() {
+        CreatePaymentCardsDTO dto = new CreatePaymentCardsDTO();
+        dto.setNumber("1234567812345678");
+        dto.setExpirationDate(LocalDate.of(2030,12,31));
+        dto.setActive(true);
+        dto.setUserId(999999L);
+
+        HttpEntity<CreatePaymentCardsDTO> request =
+                new HttpEntity<>(dto, headersWithToken(adminToken));
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/payment-cards/create",
+                        HttpMethod.POST, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void testCreateCardLimitExceeded() {
+        for (int i = 0; i < 5; i++) {
+            PaymentCardsEntity card = new PaymentCardsEntity();
+            card.setNumber("1234" + i);
+            card.setHolder("John");
+            card.setExpirationDate(LocalDate.of(2030, 12, 31));
+            card.setActive(true);
+            card.setUser(user);
+            cardsRepository.save(card);
+        }
+
+        CreatePaymentCardsDTO dto = new CreatePaymentCardsDTO();
+        dto.setNumber("9999999999999999");
+        dto.setExpirationDate(LocalDate.of(2030,12,31));
+        dto.setActive(true);
+        dto.setUserId(user.getId());
+
+        HttpEntity<CreatePaymentCardsDTO> request =
+                new HttpEntity<>(dto, headersWithToken(adminToken));
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/payment-cards/create",
+                        HttpMethod.POST, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void testCreateCardWithoutToken() {
+        CreatePaymentCardsDTO dto = new CreatePaymentCardsDTO();
+
+        HttpEntity<CreatePaymentCardsDTO> request =
+                new HttpEntity<>(dto);
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/payment-cards/create",
+                        HttpMethod.POST, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
 }

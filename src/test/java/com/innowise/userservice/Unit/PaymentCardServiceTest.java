@@ -281,6 +281,19 @@ public class PaymentCardServiceTest {
                 () -> paymentCardService.delete(1L));
     }
 
+    @Test
+    void updateShouldPreserveUserRelation() {
+
+        card.setUser(user);
+
+        when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
+        when(mapper.toDTO(card)).thenReturn(cardDTO);
+
+        PaymentCardsDTO result = paymentCardService.update(cardDTO);
+
+        assertNotNull(result);
+        assertEquals(user, card.getUser());
+    }
 
 
 }

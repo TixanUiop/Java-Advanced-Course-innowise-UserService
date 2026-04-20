@@ -291,4 +291,56 @@ public class UserControllerIT {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
     }
+    @Test
+    void testCreateUserDuplicateEmail() {
+        createUserViaApi("Alice", "Smith", "alice@test.com");
+
+        CreateUserDTO dto = new CreateUserDTO();
+        dto.setName("Alice2");
+        dto.setSurname("Smith2");
+        dto.setEmail("alice@test.com");
+        dto.setBirthDate(LocalDate.of(1990,1,1));
+
+        HttpEntity<CreateUserDTO> request =
+                new HttpEntity<>(dto, headersWithToken(adminToken));
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/users/create",
+                        HttpMethod.POST, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    void testActivateUserWithoutAdmin() {
+        String userToken = testJwtUtil.generateTestToken(user.getId(), "USER");
+
+        HttpEntity<Void> request =
+                new HttpEntity<>(headersWithToken(userToken));
+
+        ResponseEntity<String> response =
+                restTemplate.exchange("/api/v1/users/activate/" + user.getId(),
+                        HttpMethod.POST, request, String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void testGetAllUsersEmptyPage() {
+        userRepository.deleteAll();
+
+        HttpEntity<Void> request =
+                new HttpEntity<>(headersWithToken(adminToken));
+
+        ResponseEntity<Map<String, Object>> response =
+                restTemplate.exchange("/api/v1/users?page=0&size=10",
+                        HttpMethod.GET, request,
+                        new ParameterizedTypeReference<>() {});
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        List<?> content = (List<?>) response.getBody().get("content");
+        assertThat(content).isEmpty();
+    }
+
 }
